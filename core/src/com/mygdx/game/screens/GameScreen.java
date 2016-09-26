@@ -1,5 +1,6 @@
 package com.mygdx.game.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Sound;
@@ -8,10 +9,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Constants;
+import com.mygdx.game.common.InfiniteScrollBackground;
 import com.mygdx.game.common.Bullets;
 import com.mygdx.game.common.CollisionHandler;
 import com.mygdx.game.common.Enemies;
@@ -35,15 +38,16 @@ public class GameScreen extends ScreenAdapter {
     private final Viewport viewPort;
     private final Sound explosion;
     private final Sound playerExplosion;
-    private final Texture background;
-    private int backgroundY = 0;
+    private final InfiniteScrollBackground background;
+    private final Game game;
 
-    public GameScreen() {
+    public GameScreen(Game game) {
+        this.game = game;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Constants.APP_WIDTH, Constants.APP_HEIGHT);
         viewPort = new FitViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT, camera);
-        bullets = new Bullets(new Texture("bullet.png"));
+        bullets = new Bullets(new Texture("bullet5.png"));
         player = new Player(this.bullets);
         player.centerX();
         this.enemyBullets = new Bullets(new Texture("bullet_enemy.png"));
@@ -53,7 +57,7 @@ public class GameScreen extends ScreenAdapter {
         this.effects = new Effects();
         this.explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion1.mp3"));
         this.playerExplosion = Gdx.audio.newSound(Gdx.files.internal("sounds/playerExplosion.mp3"));
-        this.background = new Texture("back_2.png");
+        this.background = new InfiniteScrollBackground(new Texture("back_2.png"));
     }
 
     public Integer getScore() {
@@ -129,6 +133,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void update(float delta) {
+        background.act(delta);
         player.update(delta);
         enemies.update(delta);
         bullets.update(delta);
@@ -152,7 +157,7 @@ public class GameScreen extends ScreenAdapter {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(background,0,backgroundY--);
+        background.draw(batch,0);
         player.draw(batch);
         enemies.render(batch);
         bullets.render(batch);
@@ -171,10 +176,15 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void handleInput() {
-        if (Gdx.input.isTouched()) {
-            Vector3 newPosition = camera
-                    .unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            player.moveTo(newPosition.x, newPosition.y);
+        if (player.isAlive()) {
+            if (Gdx.input.isTouched()) {
+                Vector3 newPosition = camera
+                        .unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                player.moveTo(newPosition.x, 32);
+            }
+        } else if (Gdx.input.justTouched()) {
+            game.setScreen(new MainMenuScreen(game));
         }
+
     }
 }

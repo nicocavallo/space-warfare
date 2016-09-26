@@ -4,7 +4,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.mygdx.game.Constants;
 import com.mygdx.game.MyGdxGame;
-import com.sun.tools.internal.jxc.ap.Const;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

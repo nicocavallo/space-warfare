@@ -4,12 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.mygdx.game.screens.GameScreen;
+import com.mygdx.game.screens.MainMenuScreen;
 
 public class MyGdxGame extends Game {
 
     private Music gameMusic;
-
-
 
     @Override
     public void create() {
@@ -17,7 +16,8 @@ public class MyGdxGame extends Game {
 
         // start the playback of the background music immediately
         gameMusic.setLooping(true);
+        gameMusic.setVolume(0.5f);
         gameMusic.play();
-        setScreen(new GameScreen());
+        setScreen(new MainMenuScreen(this));
     }
 }

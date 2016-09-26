@@ -9,7 +9,7 @@ public class Player extends Group.Item {
     private int health = 4;
 
     public Player(Bullets bullets) {
-        super(new Texture("ship.png"),0,0,2,2.5f);
+        super(new Texture("player_ship.png"),0,0,3,2.5f);
         this.bullets = bullets;
         this.bullets.setShooter(this);
     }
@@ -43,7 +43,7 @@ public class Player extends Group.Item {
             } else if (sprite.getY() > Constants.APP_HEIGHT - sprite.getHeight()) {
                 sprite.setPosition(sprite.getX(), Constants.APP_HEIGHT - sprite.getHeight());
             }
-            bullets.spawn(this.getX(), this.getY() + this.getHeight() / 2, 0, 3, delta);
+            bullets.spawn(this.getX(), this.getY() + this.getHeight() / 2, 0, 4, delta);
         }
     }
 

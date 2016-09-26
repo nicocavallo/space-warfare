@@ -32,7 +32,7 @@ public class Enemies extends Group {
         } else if (game.getScore() > 50) {
             this.itemCoolDownSecs = 1.5f;
         }
-        this.spawn(GameUtils.RANDOM.nextFloat() * Constants.APP_WIDTH,
+        this.spawn(GameUtils.RANDOM.nextFloat() * (Constants.APP_WIDTH - 40),
                 Constants.APP_HEIGHT - 40, 0, -3, delta);
         return super.update(delta);
     }
