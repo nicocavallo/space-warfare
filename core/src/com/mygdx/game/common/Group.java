@@ -115,12 +115,16 @@ public abstract class Group {
 
         public void update(float delta) {
             if (active)
-                this.sprite.setPosition(sprite.getX() + speedX, sprite.getY() + speedY);
+                this.sprite.setPosition(sprite.getX() + getSpeedX(), sprite.getY() + speedY);
         }
 
         public void draw(SpriteBatch batch) {
             if (active)
                 this.sprite.draw(batch);
+        }
+
+        protected float getSpeedX() {
+            return speedX;
         }
 
         public float getX() {

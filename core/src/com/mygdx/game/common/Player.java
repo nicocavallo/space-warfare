@@ -6,12 +6,25 @@ import com.mygdx.game.Constants;
 public class Player extends Group.Item {
 
     private final Bullets bullets;
+    private PlayerSettings settings;
     private int health = 4;
 
     public Player(Bullets bullets) {
         super(new Texture("player_ship.png"),0,0,3,2.5f);
         this.bullets = bullets;
         this.bullets.setShooter(this);
+    }
+
+    public Player(Bullets bullets, PlayerSettings settings) {
+        this(bullets);
+        this.settings = settings;
+        this.health = Math.round(settings.getHealth());
+        this.bullets.setItemCoolDownSecs(settings.getLaserSpeed());
+    }
+
+    @Override
+    protected float getSpeedX() {
+        return this.settings.getVelocity();
     }
 
     public float getX() {

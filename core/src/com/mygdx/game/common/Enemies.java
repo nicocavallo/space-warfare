@@ -1,5 +1,6 @@
 package com.mygdx.game.common;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Constants;
@@ -10,6 +11,7 @@ public class Enemies extends Group {
 
     private final GameScreen game;
     private final Bullets bullets;
+    private float elapsed = 0;
 
     public Enemies(GameScreen gameScreen, Bullets bullets) {
         super(new Texture("enemy_1.png"));
@@ -21,15 +23,20 @@ public class Enemies extends Group {
 
     @Override
     public Group update(float delta) {
-        if (game.getScore() > 400) {
+        this.elapsed += delta;
+        if (this.elapsed > 100) {
+            this.itemCoolDownSecs = .10f;
+        } else if (this.elapsed > 75) {
+            this.itemCoolDownSecs = .15f;
+        } else if (this.elapsed > 50) {
             this.itemCoolDownSecs = .20f;
-        } else if (game.getScore() > 300) {
+        } else if (this.elapsed > 40) {
             this.itemCoolDownSecs = .25f;
-        } else if (game.getScore() > 200) {
+        } else if (this.elapsed > 30) {
             this.itemCoolDownSecs = .5f;
-        } else if (game.getScore() > 100) {
+        } else if (this.elapsed > 20) {
             this.itemCoolDownSecs = .75f;
-        } else if (game.getScore() > 50) {
+        } else if (this.elapsed > 10) {
             this.itemCoolDownSecs = 1.5f;
         }
         this.spawn(GameUtils.RANDOM.nextFloat() * (Constants.APP_WIDTH - 40),

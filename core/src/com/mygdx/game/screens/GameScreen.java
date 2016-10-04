@@ -9,11 +9,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Constants;
+import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.common.InfiniteScrollBackground;
 import com.mygdx.game.common.Bullets;
 import com.mygdx.game.common.CollisionHandler;
@@ -22,46 +22,45 @@ import com.mygdx.game.common.Group;
 import com.mygdx.game.common.HUD;
 import com.mygdx.game.common.Player;
 import com.mygdx.game.common.Effects;
+import com.mygdx.game.common.PlayerSettings;
 
 public class GameScreen extends ScreenAdapter {
 
 
-    private OrthographicCamera camera;
-    private SpriteBatch batch;
+    private final OrthographicCamera camera;
+    private final SpriteBatch batch;
     private final Player player;
     private final Bullets bullets;
     private final Enemies enemies;
     private final Bullets enemyBullets;
-    private Integer score;
     private final HUD hud;
-    private Effects effects;
+    private final Effects effects;
     private final Viewport viewPort;
     private final Sound explosion;
     private final Sound playerExplosion;
     private final InfiniteScrollBackground background;
-    private final Game game;
+    private final MyGdxGame game;
 
-    public GameScreen(Game game) {
+    public GameScreen(MyGdxGame game) {
         this.game = game;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Constants.APP_WIDTH, Constants.APP_HEIGHT);
         viewPort = new FitViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT, camera);
-        bullets = new Bullets(new Texture("bullet5.png"));
-        player = new Player(this.bullets);
+        bullets = new Bullets(new Texture("bullet5.png"), Gdx.audio.newSound(Gdx.files.internal("sounds/laser.mp3")));
+        player = new Player(this.bullets, game.getSettings());
         player.centerX();
-        this.enemyBullets = new Bullets(new Texture("bullet_enemy.png"));
+        this.enemyBullets = new Bullets(new Texture("bullet_enemy.png"), Gdx.audio.newSound(Gdx.files.internal("sounds/enemyLaser.mp3")));
         this.enemies = new Enemies(this, enemyBullets);
-        this.score = 0;
         this.hud = new HUD(this, player);
         this.effects = new Effects();
         this.explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion1.mp3"));
         this.playerExplosion = Gdx.audio.newSound(Gdx.files.internal("sounds/playerExplosion.mp3"));
-        this.background = new InfiniteScrollBackground(new Texture("back_2.png"));
+        this.background = new InfiniteScrollBackground(new Texture("back_2_vo.png"));
     }
 
     public Integer getScore() {
-        return score;
+        return game.getSettings().getPoints();
     }
 
     private class EnemyBulletHandler implements CollisionHandler {
@@ -69,7 +68,7 @@ public class GameScreen extends ScreenAdapter {
         public void onCollision(Group.Item item1, Group.Item item2) {
             enemies.remove(item1);
             bullets.remove(item2);
-            score += 10;
+            game.getSettings().incPoints(10);
             effects.rumble(camera, 1f, .5f);
             effects.explosion(camera, .25f, item1.getX() + item1.getWidth() / 2, item1.getY() + item1.getHeight() / 2);
             explosion.play();
@@ -82,7 +81,7 @@ public class GameScreen extends ScreenAdapter {
             enemies.remove(item1);
             effects.explosion(camera, .25f, item1.getX() + item1.getWidth() / 2, item1.getY() + item1.getHeight() / 2);
             player.hurt();
-            score += 10;
+            game.getSettings().incPoints(10);
             effects.rumble(camera, 1f, 1f);
             effects.blink(camera, 0.2f, Color.RED);
             Gdx.input.vibrate(300);
@@ -148,9 +147,6 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void draw() {
-        //r 64
-        //g 0
-        //b 112
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -183,6 +179,8 @@ public class GameScreen extends ScreenAdapter {
                 player.moveTo(newPosition.x, 32);
             }
         } else if (Gdx.input.justTouched()) {
+            this.game.getSettings().upgradeAll();
+            System.out.println(this.game.getSettings().getPoints());
             game.setScreen(new MainMenuScreen(game));
         }
 
